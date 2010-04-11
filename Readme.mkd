@@ -1,0 +1,16 @@
+git-export -- SVN doesn't have it *all* wrong
+==========
+
+
+## USAGE
+
+	`git export [../path/]`
+	
+Export the contents of the current git index to the given path, ready to rock.
+
+
+## CONTRIBUTORS
+
+* Daniel Schierbeck
+* Abhishek Mukherjee
+* Kenneth Reitz
