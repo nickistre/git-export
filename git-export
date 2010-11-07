@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/bash
 #
 # Copyright (c) 2008 Daniel Schierbeck
 #
@@ -9,13 +9,14 @@ LONG_USAGE="Export the contents of the git index to the specified directory"
 SUBDIRECTORY_OK=Yes
 OPTIONS_SPEC=
 . "`git --exec-path`/git-sh-setup"
-TMP_DIR=/tmp
 
 
 force=0
 branch=0
 branch_name=
 destination=
+
+TMP_DIR=`mktemp -d`
 
 args=`getopt -o fhb: -l branch:,force,help,he,hel -- "$@"`
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
@@ -59,14 +60,20 @@ then
   exit 1
 fi
 
-if [ $branch -ne 1 ]
+if [ $branch -eq 1 ]
 then
   # If we're going to get a branch, looks like we will have to clone the git,
   # pushd into the clone, do a git checkout to the branch, then do the 
   # checkout-index, and finally delete the clone
   # If there's a more elegant way to do this, I would like to know.
   
-  # TODO: check that branch exists first!
+  # TODO: check that branch exists first!  For now, if the branch you choose
+  #  Doesn't exist, the following will simply use the current head!
+  
+  git clone --branch $branch_name . $TMP_DIR/
+  echo $?
+  
+  pushd $TMP_DIR/
 fi
 
 destination=$1
@@ -76,3 +83,10 @@ cd_to_toplevel
 echo "Exporting git repository to ${destination}"
 
 git checkout-index -a -f --prefix=${destination}/
+
+if [ $branch -eq 1 ]
+then
+  # Go back to original directory and delete cloned repo
+  popd
+  rm -rf $TMP_DIR
+fi
