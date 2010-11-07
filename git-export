@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (c) 2008 Daniel Schierbeck
 #
@@ -75,7 +75,9 @@ then
   
   git clone -q --branch $branch_name . $TMP_DIR/
   
-  pushd $TMP_DIR/ > /dev/null
+  # Store current directory
+  CUR_DIR=`pwd`
+  cd $TMP_DIR
 fi
 
 destination=$1
@@ -90,6 +92,7 @@ if [ $branch -eq 1 ]
 then
   echo "Cleaning up"
   # Go back to the original directory and cleanup clone
-  popd >/dev/null
+
+  cd $CUR_DIR
   rm -rf $TMP_DIR
 fi
