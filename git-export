@@ -4,16 +4,20 @@
 #
 # Export the contents of the git index to a specified directory
 
-USAGE="[-f | --force] <destination>"
+USAGE="[-f | --force] [-b <branch> | --branch=<branch> ] <destination>"
 LONG_USAGE="Export the contents of the git index to the specified directory"
 SUBDIRECTORY_OK=Yes
 OPTIONS_SPEC=
 . "`git --exec-path`/git-sh-setup"
+TMP_DIR=/tmp
+
 
 force=0
+branch=0
+branch_name=
 destination=
 
-args=`getopt -o fhb -l branch,force,help,he,hel -- "$@"`
+args=`getopt -o fhb: -l branch:,force,help,he,hel -- "$@"`
 if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
 
 eval set -- "$args"
@@ -30,8 +34,9 @@ while true ; do
       ;;
     -b|--branch)
       shift
-      echo "$1" # Testing new option.
-      exit 
+      branch=1
+      branch_name=$1
+      shift
       ;;
     --)
       shift; break ;;
@@ -52,6 +57,16 @@ if [ -e $1 -a $force -ne 1 ]
 then
   die "$1 already exists. Use --force to overwrite any existing files."
   exit 1
+fi
+
+if [ $branch -ne 1 ]
+then
+  # If we're going to get a branch, looks like we will have to clone the git,
+  # pushd into the clone, do a git checkout to the branch, then do the 
+  # checkout-index, and finally delete the clone
+  # If there's a more elegant way to do this, I would like to know.
+  
+  # TODO: check that branch exists first!
 fi
 
 destination=$1
