@@ -4,9 +4,9 @@ git-export -- SVN doesn't have it *all* wrong
 
 ## USAGE
 
-	git export [../path/]
+	git export [-f | --force] [-b <branch> | --branch=<branch> ] <destination>
 	
-Export the contents of the current git index to the given path, ready to rock.
+Export the contents of the current git index to the given destination, ready to rock.
 
 
 ## CONTRIBUTORS
@@ -14,3 +14,4 @@ Export the contents of the current git index to the given path, ready to rock.
 * Daniel Schierbeck
 * Abhishek Mukherjee
 * Kenneth Reitz
+* Nicholas Istre
