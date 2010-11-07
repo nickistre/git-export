@@ -62,18 +62,20 @@ fi
 
 if [ $branch -eq 1 ]
 then
-  # If we're going to get a branch, looks like we will have to clone the git,
-  # pushd into the clone, do a git checkout to the branch, then do the 
-  # checkout-index, and finally delete the clone
+  # If we're going to get a branch without breaking the current reposigory, 
+  # looks like we will have to clone the git repo, pushd into the clone, 
+  # do a git checkout to the branch, then do the checkout-index, and 
+  # finally delete the clone.
   # If there's a more elegant way to do this, I would like to know.
   
   # TODO: check that branch exists first!  For now, if the branch you choose
   #  Doesn't exist, the following will simply use the current head!
   
-  git clone --branch $branch_name . $TMP_DIR/
-  echo $?
+  echo "Generating clone of git repository with branch ${branch_name} checked out"
   
-  pushd $TMP_DIR/
+  git clone -q --branch $branch_name . $TMP_DIR/
+  
+  pushd $TMP_DIR/ > /dev/null
 fi
 
 destination=$1
@@ -86,7 +88,8 @@ git checkout-index -a -f --prefix=${destination}/
 
 if [ $branch -eq 1 ]
 then
-  # Go back to original directory and delete cloned repo
-  popd
+  echo "Cleaning up"
+  # Go back to the original directory and cleanup clone
+  popd >/dev/null
   rm -rf $TMP_DIR
 fi
