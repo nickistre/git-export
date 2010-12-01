@@ -68,16 +68,37 @@ then
   # finally delete the clone.
   # If there's a more elegant way to do this, I would like to know.
   
-  # TODO: check that branch exists first!  For now, if the branch you choose
-  #  Doesn't exist, the following will simply use the current head!
+  echo "Generating clone of git repository with branch '${branch_name}' checked out"
   
-  echo "Generating clone of git repository with branch ${branch_name} checked out"
+  # Make a clone of current into temp directory.
+  git clone -q . $TMP_DIR/
   
-  git clone -q --branch $branch_name . $TMP_DIR/
+  # Check if this returns an error.
+  LAST_ERROR=$?
+  if [ $LAST_ERROR -ne 0 ]
+  then
+    die "Error cloning repository to temp directory! Exiting..."
+    rm -rf $TMP_DIR
+    exit $LAST_ERROR
+  fi
   
-  # Store current directory
+  # Store current directory and move to temporary clone repository
   CUR_DIR=`pwd`
   cd $TMP_DIR
+  
+  # Checkout branch in clone repository
+  git checkout -q $branch_name
+  
+  # Check for errors.
+  LAST_ERROR=$?
+  if [ $LAST_ERROR -ne 0 ]
+  then
+    die "Error on checkout of requested branch. Is '$branch_name' an existing branch? Exiting..."
+    # Move back to last directory and cleanup.
+    cd $CUR_DIR
+    rm -rf $TMP_DIR
+    exit $LAST_ERROR
+  fi
 fi
 
 destination=$1
